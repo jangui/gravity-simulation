@@ -1,0 +1,3 @@
+/Users/jangui/git/orbits/cmake-build-debug/CMakeFiles/orbits.dir
+/Users/jangui/git/orbits/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/jangui/git/orbits/cmake-build-debug/CMakeFiles/rebuild_cache.dir
