@@ -28,10 +28,6 @@ public:
         //double g = 6.674 * pow(10, -11); // gravitational constant
         double g = 10000;
 
-        // force
-        double fx = 0.0;
-        double fy = 0.0;
-
         // acceleration
         double ax = 0.0;
         double ay = 0.0;
@@ -62,31 +58,10 @@ public:
             ++it;
 
             // calculate gravitational force
-            double fg = (g * mass * other->mass) / (d * d);
-            double fgx = (fg * ((other->x - x)) / d);
-            double fgy = (fg * ((other->y - y)) / d);
-            fx += fgx;
-            fy += fgy;
-
-
-            // DEBUG
-             /*
-            std::cout << "dx: " << dx << " dy: " << dy << std::endl;
-            std::cout << "fgx: " << fgx << " fgy: " << fgy << std::endl;
-            std::cout << std::endl;
-             */
+            double fg = (g * other->mass) / (d * d * d);
+            ax += fg * (other->x - x);
+            ay += fg * (other->y - y);
         }
-
-        // DEBUG
-        /*
-        std::cout << "fx: " << fx << " fy: " << fy << std::endl;
-        std::cout << "ax: " << ax << " ay: " << ay << std::endl;
-        std::cout << std::endl << std::endl;
-         */
-
-        // calc acceleration
-        if (fx != 0.0) { ax = fx / mass; }
-        if (fy != 0.0) { ay = fy / mass; }
 
         // update velocity
         vx += ax * deltaTime;
@@ -140,25 +115,13 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // initialization
-    /*
-    Color earthColor = {0,0,255,255};
-    Color sunColor = {255,0,255,255};
-
-    Body *earth = new Body(1000, 10, 700, 0, -120, 75, earthColor); // Earth
-    Body *sun = new Body(1000, 10, 300, 900, 120, -75, sunColor); // Sun
-
-    std::list<Body*> bodies = {earth, sun};
-     */
+    // initialize bodies
     srand(time(0));
-
     std::list<Body*> bodies;
-
+    bodies.push_back(new Body(1000, 10, 600, 450, 0, 0, {255, 0, 0, 255}));
     int maxSize = 5;
     int minSize = 1;
     int spawns = 12;
-
-    // Loop 1
     for (int i = 0; i < spawns; ++i) {
         double mass = randomInRange(minSize, maxSize);
         double radius = mass / 100.0;
@@ -167,11 +130,8 @@ int main(int argc, char *argv[]) {
         double vx = randomInRange(0, 75);
         double vy = randomInRange(-75, 75);
         Color color = {randomInRange(0, 255), randomInRange(0, 255), randomInRange(0, 255), 255};
-
         bodies.push_back(new Body(mass, radius, x, y, vx, vy, color));
     }
-
-    // Loop 2
     for (int i = 0; i < spawns; ++i) {
         double mass = randomInRange(minSize, maxSize);
         double radius = mass / 100.0;
@@ -180,11 +140,8 @@ int main(int argc, char *argv[]) {
         double vx = randomInRange(-75, 0);
         double vy = randomInRange(-75, 75);
         Color color = {randomInRange(0, 255), randomInRange(0, 255), randomInRange(0, 255), 255};
-
         bodies.push_back(new Body(mass, radius, x, y, vx, vy, color));
     }
-
-    // Loop 3
     for (int i = 0; i < spawns; ++i) {
         double mass = randomInRange(minSize, maxSize);
         double radius = mass / 100.0;
@@ -193,11 +150,8 @@ int main(int argc, char *argv[]) {
         double vx = randomInRange(-75, 75);
         double vy = randomInRange(0, 75);
         Color color = {randomInRange(0, 255), randomInRange(0, 255), randomInRange(0, 255), 255};
-
         bodies.push_back(new Body(mass, radius, x, y, vx, vy, color));
     }
-
-    // Loop 4
     for (int i = 0; i < spawns; ++i) {
         double mass = randomInRange(minSize, maxSize);
         double radius = mass / 100.0;
@@ -206,12 +160,8 @@ int main(int argc, char *argv[]) {
         double vx = randomInRange(-75, 75);
         double vy = randomInRange(-75, 0);
         Color color = {randomInRange(0, 255), randomInRange(0, 255), randomInRange(0, 255), 255};
-
         bodies.push_back(new Body(mass, radius, x, y, vx, vy, color));
     }
-
-    // big bass in middle
-    bodies.push_back(new Body(1000, 10, 600, 450, 0, 0, {255, 0, 0, 255}));
 
     // fps
     const int FPS = 60;
