@@ -1,9 +1,24 @@
 #include <SDL.h>
 #include <iostream>
 #include <list>
+#include <vector>
 
 struct Color {
     int r, g, b, a;
+};
+
+class Point {
+public:
+    int x, y;
+    Color color;
+
+    Point(int x, int y, Color color) : x(x), y(y), color(color) {}
+
+    void render(SDL_Renderer* renderer) const {
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);  // R, G, B, A
+        SDL_RenderDrawPoint(renderer, x, y);
+    }
+
 };
 
 class Body {
@@ -13,18 +28,20 @@ public:
     double vx, vy; // velocity
     double mass;
     int radius;
+    bool trail;
+    bool renderFlag;
     Color color;
 
-    Body(double mass, int radius, int x, int y, double vx, double vy, const Color& color)
-        : mass(mass), radius(radius), x(x), y(y), vx(vx), vy(vy), color(color), accumulatedX(0), accumulatedY(0) {}
+    Body(double mass, int radius, int x, int y, double vx, double vy, const Color& color, bool renderFlag, bool trail) : mass(mass), radius(radius), x(x), y(y), vx(vx), vy(vy), color(color), accumulatedX(0), accumulatedY(0), renderFlag(renderFlag), trail(trail) {}
 
     void render(SDL_Renderer* renderer) const {
+        if (renderFlag == false) { return; }
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);  // R, G, B, A
         SDL_Rect rect = { x, y,radius, radius }; // x, y, w, h
         SDL_RenderDrawRect(renderer, &rect);
     }
 
-    void update(std::list<Body*>& bodies, double deltaTime) {
+    void update(std::list<Body*>& bodies, std::vector<Point*>& points, double deltaTime) {
         //double g = 6.674 * pow(10, -11); // gravitational constant
         double g = 10000;
 
@@ -77,6 +94,10 @@ public:
         // reset accumulated changes
         accumulatedX -= static_cast<int>(accumulatedX);
         accumulatedY -= static_cast<int>(accumulatedY);
+
+        if (trail) {
+            points.push_back(new Point(x, y, color));
+        }
     }
 
     void merge(const Body& other) {
@@ -115,10 +136,11 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // initialize bodies
+    // initialize bodies and points
+    std::vector<Point*> points;
     srand(time(0));
     std::list<Body*> bodies;
-    bodies.push_back(new Body(1000, 10, 600, 450, 0, 0, {255, 0, 0, 255}));
+    bodies.push_back(new Body(1000, 10, 600, 450, 0, 0, {255, 0, 0, 255}, false, false));
     int maxSize = 5;
     int minSize = 1;
     int spawns = 12;
@@ -130,7 +152,7 @@ int main(int argc, char *argv[]) {
         double vx = randomInRange(0, 75);
         double vy = randomInRange(-75, 75);
         Color color = {randomInRange(0, 255), randomInRange(0, 255), randomInRange(0, 255), 255};
-        bodies.push_back(new Body(mass, radius, x, y, vx, vy, color));
+        bodies.push_back(new Body(mass, radius, x, y, vx, vy, color, false, true));
     }
     for (int i = 0; i < spawns; ++i) {
         double mass = randomInRange(minSize, maxSize);
@@ -140,7 +162,7 @@ int main(int argc, char *argv[]) {
         double vx = randomInRange(-75, 0);
         double vy = randomInRange(-75, 75);
         Color color = {randomInRange(0, 255), randomInRange(0, 255), randomInRange(0, 255), 255};
-        bodies.push_back(new Body(mass, radius, x, y, vx, vy, color));
+        bodies.push_back(new Body(mass, radius, x, y, vx, vy, color, false, true));
     }
     for (int i = 0; i < spawns; ++i) {
         double mass = randomInRange(minSize, maxSize);
@@ -150,7 +172,7 @@ int main(int argc, char *argv[]) {
         double vx = randomInRange(-75, 75);
         double vy = randomInRange(0, 75);
         Color color = {randomInRange(0, 255), randomInRange(0, 255), randomInRange(0, 255), 255};
-        bodies.push_back(new Body(mass, radius, x, y, vx, vy, color));
+        bodies.push_back(new Body(mass, radius, x, y, vx, vy, color, false, true));
     }
     for (int i = 0; i < spawns; ++i) {
         double mass = randomInRange(minSize, maxSize);
@@ -160,7 +182,7 @@ int main(int argc, char *argv[]) {
         double vx = randomInRange(-75, 75);
         double vy = randomInRange(-75, 0);
         Color color = {randomInRange(0, 255), randomInRange(0, 255), randomInRange(0, 255), 255};
-        bodies.push_back(new Body(mass, radius, x, y, vx, vy, color));
+        bodies.push_back(new Body(mass, radius, x, y, vx, vy, color, false, true));
     }
 
     // fps
@@ -188,7 +210,7 @@ int main(int argc, char *argv[]) {
 
         // Updating
         for (auto *body : bodies) {
-            body->update(bodies, deltaTime);
+            body->update(bodies, points, deltaTime);
         }
 
         // Rendering
@@ -197,6 +219,9 @@ int main(int argc, char *argv[]) {
         // Render Objects
         for (auto *body : bodies) {
             body->render(renderer);
+        }
+        for (auto *point : points) {
+           point->render(renderer);
         }
         SDL_RenderPresent(renderer); // present renderer
 
