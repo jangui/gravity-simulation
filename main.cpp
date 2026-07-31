@@ -3,6 +3,8 @@
 #include <list>
 #include <vector>
 
+#include "Application.hpp"
+
 struct Color {
     int r, g, b, a;
 };
@@ -113,19 +115,18 @@ int randomInRange(int min, int max) {
 }
 
 int main(int argc, char *argv[]) {
-    // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
-        return 1;
+    // create application
+    Application app;
+    try {
+        //Application app;
+        //app.run();
+    }
+    catch (const std::exception& error) {
+        std::cerr << error.what() << '\n';
+        return EXIT_FAILURE;
     }
 
-    // Create an SDL window
-    SDL_Window *window = SDL_CreateWindow("Orbits", 100, 100, 1200, 900, SDL_WINDOW_SHOWN);
-    if (window == nullptr) {
-        std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return 1;
-    }
+    SDL_Window *window= (app.window_).window_;
 
     // Create a renderer for the window
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
