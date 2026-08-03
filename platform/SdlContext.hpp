@@ -5,10 +5,6 @@ class SdlContext {
 public:
     SdlContext();
     ~SdlContext();
-
-    // delete copy constructor
-    SdlContext(const SdlContext&) = delete;
-    // delete assignment operator
-    SdlContext& operator=(const SdlContext&) = delete;
-
+    SdlContext(const SdlContext&) = delete; // delete copy constructor
+    SdlContext& operator=(const SdlContext&) = delete; // delete assignment operator
 };

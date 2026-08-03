@@ -23,4 +23,10 @@ Window::Window(const WindowConfig& config) {
     }
 }
 
-Window::~Window() {}
+SDL_Window* Window::getWindow() const {
+    return window_;
+}
+
+Window::~Window() {
+    SDL_DestroyWindow(window_);
+}

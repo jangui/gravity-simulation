@@ -17,15 +17,10 @@ struct WindowConfig {
 class Window {
 public:
     explicit Window(const WindowConfig& config);
-
+    [[nodiscard]] SDL_Window* getWindow() const;
     ~Window();
-
-   // delete copy constructor
-   Window(const Window&) = delete;
-   // delete assignment operator
-   Window& operator=(const Window&) = delete;
-
-    SDL_Window *window_ = nullptr; // todo make private
+    Window(const Window&) = delete; // delete copy constructor
+    Window& operator=(const Window&) = delete; // delete assignment operator
 private:
-    //SDL_Window *window_ = nullptr;
+    SDL_Window *window_ = nullptr;
 };

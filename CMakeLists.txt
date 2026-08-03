@@ -14,7 +14,7 @@ add_executable(
         platform/SdlContext.cpp
         platform/Window.cpp
         render/Renderer.cpp
-)
+        physics/PhysicsSystem.cpp)
 
 # Link SDL2
 target_link_libraries(gravity-simulation SDL2::SDL2 SDL2::SDL2main)
